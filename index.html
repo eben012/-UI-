@@ -389,6 +389,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .modal-overlay.active {
@@ -402,6 +403,7 @@
             max-width: 500px;
             width: 90%;
             text-align: center;
+            margin: 20px auto;
         }
 
         .modal-title {
@@ -486,16 +488,159 @@
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
         }
 
+        /* ===== A패스 팝업 ===== */
+        .apass-popup-content {
+            text-align: left;
+        }
+
+        .apass-headline {
+            font-size: 28px;
+            font-weight: 900;
+            color: #FF6B6B;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #FF6B6B, #FFB6B6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .apass-benefits {
+            margin-bottom: 25px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .benefit-item::before {
+            content: "✅";
+            margin-right: 12px;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .benefit-item strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #FF6B6B;
+        }
+
+        .apass-hidden-terms {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #999;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            border-left: 4px solid #FF6B6B;
+        }
+
+        .apass-hidden-terms strong {
+            color: #666;
+        }
+
+        .apass-button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .apass-button-group button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .apass-approve-btn {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+        }
+
+        .apass-approve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .apass-reject-btn {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .apass-reject-btn:hover {
+            background: #e8e8e8;
+            color: #666;
+        }
+
+        /* ===== 멤버십 가입 완료 ===== */
+        .membership-completion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .completion-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .completion-message {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .benefit-summary {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #ffc107;
+        }
+
+        .benefit-summary h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .benefit-list {
+            text-align: left;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .benefit-list li {
+            margin-bottom: 8px;
+        }
+
         /* ===== 완료 페이지 ===== */
         .completion-page {
             text-align: center;
         }
 
-        .completion-message {
+        .completion-result {
             padding: 40px 20px;
         }
 
-        .completion-message h2 {
+        .completion-result h2 {
             font-size: 28px;
             margin-bottom: 20px;
             color: #FF6B6B;
@@ -684,7 +829,7 @@
 
             <div class="navigation">
                 <button class="nav-button prev" onclick="goToWaiting()" disabled>← 이전</button>
-                <button class="nav-button next" onclick="goToPage2()">다음 →</button>
+                <button class="nav-button next" onclick="proceedToPage2()">다음 →</button>
             </div>
 
             <div class="cart-items">
@@ -784,7 +929,7 @@
 
             <div class="comparison-container">
                 <!-- A패스 멤버십 선택지 -->
-                <div class="comparison-card membership" onclick="selectPaymentOption('membership', 16400)">
+                <div class="comparison-card membership" onclick="selectPaymentOption('membership', 14500)">
                     <div class="badge">✨ 추천</div>
                     <div class="card-title">A패스 멤버십</div>
                     <div class="price-detail">
@@ -799,9 +944,9 @@
                     <div class="price-detail">
                         • 매월 갱신
                     </div>
-                    <div class="final-price" id="membershipTotal">16,400원</div>
+                    <div class="final-price" id="membershipTotal">14,500원</div>
                     <div class="price-detail" style="font-size: 12px; color: #999; margin-top: 10px;">
-                        월 구독료 4,900원 포함
+                        배달료 제외, 월 4,900원 구독료 별도
                     </div>
                 </div>
 
@@ -855,7 +1000,7 @@
 
         <!-- ===== 완료 페이지 ===== -->
         <div class="page completion-page">
-            <div class="completion-message">
+            <div class="completion-result">
                 <h2>✅ 결제 완료</h2>
                 <p style="color: #666; margin-bottom: 25px;">주문이 접수되었습니다</p>
 
@@ -878,6 +1023,30 @@
                     <button class="reset-btn" onclick="resetProcess()">처음부터 다시</button>
                     <button class="view-analysis-btn" onclick="goToAnalysis()">분석 보기</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- ===== 멤버십 가입 완료 페이지 ===== -->
+        <div class="page membership-completion-page">
+            <div class="membership-completion">
+                <div class="completion-icon">🎉</div>
+                <div class="completion-title">A패스 멤버십 가입 완료!</div>
+                <div class="completion-message">
+                    <p>축하합니다! A패스 멤버십이 활성화되었습니다.</p>
+                    <p style="margin-top: 10px; font-size: 13px; color: #999;">이제 모든 주문에서 혜택을 즐기실 수 있습니다.</p>
+                </div>
+
+                <div class="benefit-summary">
+                    <h3>🎁 활성화된 혜택</h3>
+                    <ul class="benefit-list">
+                        <li>✅ 이번 주문 3,000원 즉시 할인</li>
+                        <li>✅ 매월 배달팁 0원 (무제한)</li>
+                        <li>✅ 매월 10% 추가 할인 쿠폰팩</li>
+                        <li>✅ 우선 배차 서비스</li>
+                    </ul>
+                </div>
+
+                <button class="action-button" onclick="proceedToPayment()">결제 계속하기</button>
             </div>
         </div>
 
@@ -953,6 +1122,38 @@
         </div>
     </div>
 
+    <!-- A패스 소개 팝업 -->
+    <div id="apassModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="apass-popup-content">
+                <div class="apass-headline">🎉 오직 회원님만을 위한 역대급 혜택, 'A패스' 출시!</div>
+                <div style="color: #FF6B6B; font-size: 16px; font-weight: 600; margin-bottom: 20px;">지금 가입하면 오늘 주문 즉시 3,000원 대박 할인!</div>
+
+                <div class="apass-benefits">
+                    <div class="benefit-item">
+                        <span><strong>[무제한]</strong> 모든 가게 배달팁 0원<br><span style="font-weight: 400; color: #666; font-size: 13px; margin-left: 0;">(원하는 만큼 마음껏 주문하세요!)</span></span>
+                    </div>
+                    <div class="benefit-item">
+                        <span><strong>[매월지급]</strong> 브랜드 전용 10% 추가 할인 쿠폰팩 매달 지급</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span><strong>[우선배차]</strong> 피크타임에도 막힘없이 가장 빠르게 도착하는 프리미엄 배달</span>
+                    </div>
+                </div>
+
+                <div class="apass-hidden-terms">
+                    <strong>⭐ 중요 안내사항</strong><br><br>
+                    본 이벤트는 첫 달 무료 체험으로 제공되며, 무료 체험 기간(30일)이 종료된 후에는 등록된 결제 수단으로 <strong>매월 4,900원이 정기 자동으로 결제(숨은 갱신)</strong>됩니다. 가입 후 7일 이내에 미사용 시 청약철회가 가능하나, 오늘 주문에서 3,000원 즉시 할인을 적용받는 경우 당월 해지 시 할인 금액이 차감된 후 환불됩니다.
+                </div>
+
+                <div class="apass-button-group">
+                    <button class="apass-approve-btn" onclick="approveApass()">승인</button>
+                    <button class="apass-reject-btn" onclick="rejectApass()">거절</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 최종 확인 팝업 -->
     <div id="finalModal" class="modal-overlay">
         <div class="modal-content">
@@ -980,6 +1181,7 @@
         let timerInterval = null;
         let selectedPaymentMethod = null;
         let selectedAmount = 0;
+        let membershipApproved = false;
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -1040,6 +1242,40 @@
             }
         }
 
+        function proceedToPage2() {
+            const membershipChecked = document.getElementById('membershipCheckbox').checked;
+            
+            if (membershipChecked) {
+                // A패스 팝업 표시
+                document.getElementById('apassModal').classList.add('active');
+            } else {
+                // 일반 결제로 진행
+                goToPage2();
+            }
+        }
+
+        function approveApass() {
+            membershipApproved = true;
+            document.getElementById('apassModal').classList.remove('active');
+            // 멤버십 가입 완료 페이지로 이동
+            document.querySelector('.page-1').classList.remove('active');
+            document.querySelector('.membership-completion-page').classList.add('active');
+            updateAllTimers();
+        }
+
+        function rejectApass() {
+            membershipApproved = false;
+            document.getElementById('apassModal').classList.remove('active');
+            // 1단계로 돌아가기
+            document.querySelector('.page-1').classList.add('active');
+        }
+
+        function proceedToPayment() {
+            document.querySelector('.membership-completion-page').classList.remove('active');
+            document.querySelector('.page-2').classList.add('active');
+            updateAllTimers();
+        }
+
         function goToPage1() {
             document.querySelector('.page-2').classList.remove('active');
             document.querySelector('.page-1').classList.add('active');
@@ -1061,7 +1297,7 @@
             // 선택된 카드에 클래스 추가
             if (method === 'membership') {
                 document.querySelector('.comparison-card.membership').classList.add('selected');
-                document.getElementById('selectedPaymentDisplay').textContent = '✨ A패스 멤버십 (16,400원)';
+                document.getElementById('selectedPaymentDisplay').textContent = '✨ A패스 멤버십 (14,500원)';
             } else {
                 document.querySelector('.comparison-card.general').classList.add('selected');
                 document.getElementById('selectedPaymentDisplay').textContent = '💳 일반 결제 (14,500원)';
@@ -1136,6 +1372,7 @@
             timerStartTime = null;
             selectedPaymentMethod = null;
             selectedAmount = 0;
+            membershipApproved = false;
             clearInterval(timerInterval);
 
             // 모든 페이지 숨기기
