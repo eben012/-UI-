@@ -42,9 +42,47 @@
         }
 
         .step-number {
-            color: #FF6B6B;
-            font-weight: bold;
-            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        /* ===== 네비게이션 ===== */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .nav-button {
+            background: #E8E8E8;
+            color: #666;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: #D8D8D8;
+            color: #333;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-button.prev {
+            flex: 0.5;
+        }
+
+        .nav-button.next {
+            flex: 0.5;
         }
 
         /* ===== 시작 대기 화면 ===== */
@@ -231,6 +269,38 @@
             color: #999;
             margin-top: 5px;
             font-weight: 300;
+        }
+
+        /* ===== 약관 드롭다운 ===== */
+        .terms-section {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .terms-section.show {
+            display: block;
+        }
+
+        .terms-dropdown {
+            background: #f0f8ff;
+            border: 2px solid #87CEEB;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .terms-dropdown h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .terms-dropdown p {
+            margin-bottom: 10px;
         }
 
         /* ===== 2단계 스타일 ===== */
@@ -473,6 +543,7 @@
             font-size: 16px;
             font-weight: 600;
             transition: all 0.2s;
+            margin-right: 10px;
         }
 
         .reset-btn:hover {
@@ -480,14 +551,104 @@
             color: #333;
         }
 
-        .warning-text {
-            background: #fff3cd;
-            padding: 15px;
+        .view-analysis-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
             border-radius: 8px;
-            color: #666;
-            font-size: 14px;
-            margin-top: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .view-analysis-btn:hover {
+            background: #45a049;
+        }
+
+        /* ===== 분석 페이지 ===== */
+        .analysis-page {
+            padding: 20px 0;
+        }
+
+        .analysis-page h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .dark-pattern-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #FF6B6B;
+        }
+
+        .pattern-number {
+            background: #FF6B6B;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .pattern-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .pattern-description {
+            color: #555;
             line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .pattern-stage {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button-row button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-to-completion-btn {
+            background: #E8E8E8;
+            color: #666;
+        }
+
+        .back-to-completion-btn:hover {
+            background: #D8D8D8;
+            color: #333;
         }
     </style>
 </head>
@@ -502,7 +663,7 @@
                 <h2>🍕 배달 서비스</h2>
                 <p>주문을 진행하시겠습니까?</p>
                 <div class="waiting-info">
-                    <p>배달 결제 프로세스의 다크패턴을 경험해봅시다.</p>
+                    <p>배달 결제 프로세스를 경험해봅시다.</p>
                     <p style="margin-top: 10px; font-size: 14px;">모든 단계를 완료하는데 걸리는 시간이 기록됩니다.</p>
                 </div>
                 <button class="start-button" onclick="startProcess()">배달 진행하기</button>
@@ -518,7 +679,12 @@
 
             <div class="step-indicator">
                 <h1>🛒 장바구니</h1>
-                <span class="step-number">단계 1: 특정옵션 사전선택 + 숨은 가격 결정</span>
+                <span class="step-number">1단계</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToWaiting()" disabled>← 이전</button>
+                <button class="nav-button next" onclick="goToPage2()">다음 →</button>
             </div>
 
             <div class="cart-items">
@@ -538,12 +704,34 @@
 
             <div class="membership-section">
                 <div class="checkbox-wrapper">
-                    <input type="checkbox" id="membershipCheckbox" checked>
+                    <input type="checkbox" id="membershipCheckbox" checked onchange="toggleTerms()">
                     <label for="membershipCheckbox" class="membership-text">
                         A패스 멤버십 가입하고 <span class="membership-price">3,000원 할인</span>받기
                     </label>
                 </div>
                 <div class="discount-note">월 4,900원</div>
+            </div>
+
+            <div class="terms-section" id="termsSection">
+                <div class="terms-dropdown">
+                    <h3>📋 A패스 멤버십 이용약관</h3>
+                    <p><strong>제1조 서비스 개요</strong></p>
+                    <p>A패스는 배달 및 외식 서비스 이용 시 할인 혜택을 제공하는 구독형 멤버십 서비스입니다.</p>
+                    
+                    <p><strong>제2조 서비스 요금</strong></p>
+                    <p>월 구독료: 4,900원</p>
+                    <p>할인 혜택: 주문 시 3,000원 할인 (조건부)</p>
+                    <p>구독료는 매월 자동으로 갱신됩니다.</p>
+                    
+                    <p><strong>제3조 자동 갱신</strong></p>
+                    <p>A패스는 결제 후 매월 자동으로 갱신됩니다. 사용자는 언제든지 앱의 설정 메뉴에서 구독을 취소할 수 있습니다.</p>
+                    
+                    <p><strong>제4조 환불 정책</strong></p>
+                    <p>구독료는 기본적으로 환불되지 않습니다. 다만, 서비스 오류로 인한 부당 요금은 환불 대상이 됩니다.</p>
+                    
+                    <p><strong>제5조 약관 변경</strong></p>
+                    <p>회사는 사전 통지 없이 약관을 변경할 수 있습니다.</p>
+                </div>
             </div>
 
             <div class="price-summary">
@@ -571,8 +759,6 @@
                     ※ 멤버십은 매월 자동으로 갱신되며, 취소는 앱 내 [설정]에서 가능합니다
                 </div>
             </div>
-
-            <button class="action-button" onclick="goToPage2()">다음 단계</button>
         </div>
 
         <!-- ===== 2단계: 결제 옵션 비교 ===== -->
@@ -584,7 +770,12 @@
 
             <div class="step-indicator">
                 <h1>💳 결제 옵션 선택</h1>
-                <span class="step-number">단계 2: 잘못된 계층구조 + 속임수 질문</span>
+                <span class="step-number">2단계</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToPage1()">← 이전</button>
+                <button class="nav-button next" onclick="goToPage3()" id="nextButtonPage2" disabled style="opacity: 0.5; cursor: not-allowed;">다음 →</button>
             </div>
 
             <div style="margin-bottom: 20px; color: #666; text-align: center;">
@@ -635,10 +826,6 @@
                     </div>
                 </div>
             </div>
-
-            <button class="action-button" id="nextButton" onclick="goToPage3()" disabled style="opacity: 0.5; cursor: not-allowed;">
-                선택 후 계속하기
-            </button>
         </div>
 
         <!-- ===== 3단계: 최종 확인 ===== -->
@@ -650,12 +837,19 @@
 
             <div class="step-indicator">
                 <h1>🔒 최종 결제</h1>
-                <span class="step-number">단계 3: 반복적 간섭 + 감정적 언어사용</span>
+                <span class="step-number">3단계</span>
             </div>
 
-            <div style="text-align: center; margin-bottom: 30px;">
-                <p style="color: #666; margin-bottom: 10px;">결제를 완료하려면 버튼을 클릭하세요</p>
-                <button class="action-button" onclick="showFinalModal()">결제하기</button>
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToPage2()">← 이전</button>
+                <button class="nav-button next" onclick="showFinalModal()">결제하기</button>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0; color: #666;">
+                <p>선택된 결제 방식으로 주문을 완료하려면 아래 버튼을 클릭하세요</p>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                    <p id="selectedPaymentDisplay" style="font-size: 16px; color: #333; font-weight: 600;">-</p>
+                </div>
             </div>
         </div>
 
@@ -680,12 +874,81 @@
                     </div>
                 </div>
 
-                <button class="reset-btn" onclick="resetProcess()">처음부터 다시 시작</button>
-
-                <div class="warning-text">
-                    ⚠️ 이 UI는 다크패턴의 위험성을 보여주기 위한 교육 자료입니다.<br>
-                    실제 앱에서 이와 같은 기법이 사용되고 있을 수 있습니다.
+                <div class="button-row">
+                    <button class="reset-btn" onclick="resetProcess()">처음부터 다시</button>
+                    <button class="view-analysis-btn" onclick="goToAnalysis()">분석 보기</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- ===== 분석 페이지 ===== -->
+        <div class="page analysis-page">
+            <div class="step-indicator">
+                <h1>📊 다크패턴 분석</h1>
+                <span class="step-number">이 결제 프로세스에 숨겨진 다크패턴들</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToCompletion()" style="flex: 1;">← 이전</button>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">1</span>
+                <span class="pattern-title">특정옵션 사전선택 (Pre-selected Option)</span>
+                <div class="pattern-description">
+                    멤버십 체크박스가 기본적으로 체크되어 있습니다. 사용자가 명시적으로 선택하지 않아도 기업에 유리한 옵션이 이미 선택된 상태로 시작합니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 - 장바구니에서 발생</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">2</span>
+                <span class="pattern-title">숨은 가격 결정 (Hidden Price)</span>
+                <div class="pattern-description">
+                    멤버십 요금과 할인 가격이 가격 요약 하단에 매우 작은 글씨로 표시됩니다. 사용자가 전체 비용 구조를 명확히 이해하기 전에 결제를 진행할 수 있습니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 - 가격 요약 섹션</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">3</span>
+                <span class="pattern-title">잘못된 계층구조 (False Hierarchy)</span>
+                <div class="pattern-description">
+                    2단계에서 멤버십 옵션은 크고 눈에 띄게, 일반 결제 옵션은 흐려진 회색으로 표시됩니다. 시각적 강조를 통해 사용자를 조작하려 합니다.
+                </div>
+                <div class="pattern-stage">📍 2단계 - 결제 옵션 비교</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">4</span>
+                <span class="pattern-title">속임수 질문 (Trick Question)</span>
+                <div class="pattern-description">
+                    최종 확인 팝업에서 "혜택을 포기하고 돈을 더 내겠습니다"와 같은 부정적 프레이밍이 사용됩니다. 이는 사용자의 판단을 흐리게 하고 멤버십 선택을 유도합니다.
+                </div>
+                <div class="pattern-stage">📍 3단계 - 최종 결제 확인</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">5</span>
+                <span class="pattern-title">반복적 간섭 (Repeated Interference)</span>
+                <div class="pattern-description">
+                    단계를 진행할 때마다 멤버십 메시지가 반복해서 나타납니다. 사용자의 결정을 여러 번 방해함으로써 최종적으로 원하는 선택을 하도록 유도합니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 → 2단계 → 3단계 전체</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">6</span>
+                <span class="pattern-title">감정적 언어사용 (Emotional Language)</span>
+                <div class="pattern-description">
+                    "손해를 보겠습니까?", "혜택을 포기하겠습니까?"와 같은 감정적이고 위협적인 표현을 사용합니다. 이는 사용자에게 죄책감이나 두려움을 유발하여 선택을 조종합니다.
+                </div>
+                <div class="pattern-stage">📍 2단계 & 3단계 - 모달 메시지</div>
+            </div>
+
+            <div class="button-row">
+                <button class="reset-btn" onclick="resetProcess()">처음부터 다시</button>
+                <button class="back-to-completion-btn" onclick="goToCompletion()">결과로 돌아가기</button>
             </div>
         </div>
     </div>
@@ -744,6 +1007,22 @@
             updateAllTimers();
         }
 
+        function goToWaiting() {
+            document.querySelector('.page-1').classList.remove('active');
+            document.querySelector('.waiting-page').classList.add('active');
+        }
+
+        function toggleTerms() {
+            const termsSection = document.getElementById('termsSection');
+            const checkbox = document.getElementById('membershipCheckbox');
+            if (checkbox.checked) {
+                termsSection.classList.add('show');
+            } else {
+                termsSection.classList.remove('show');
+            }
+            updatePrice();
+        }
+
         function updatePrice() {
             const membershipChecked = document.getElementById('membershipCheckbox').checked;
             const membershipRow = document.getElementById('membershipRow');
@@ -761,6 +1040,12 @@
             }
         }
 
+        function goToPage1() {
+            document.querySelector('.page-2').classList.remove('active');
+            document.querySelector('.page-1').classList.add('active');
+            updateAllTimers();
+        }
+
         function goToPage2() {
             document.querySelector('.page-1').classList.remove('active');
             document.querySelector('.page-2').classList.add('active');
@@ -776,15 +1061,17 @@
             // 선택된 카드에 클래스 추가
             if (method === 'membership') {
                 document.querySelector('.comparison-card.membership').classList.add('selected');
+                document.getElementById('selectedPaymentDisplay').textContent = '✨ A패스 멤버십 (16,400원)';
             } else {
                 document.querySelector('.comparison-card.general').classList.add('selected');
+                document.getElementById('selectedPaymentDisplay').textContent = '💳 일반 결제 (14,500원)';
             }
 
             selectedPaymentMethod = method;
             selectedAmount = amount;
 
             // 다음 버튼 활성화
-            const nextButton = document.getElementById('nextButton');
+            const nextButton = document.getElementById('nextButtonPage2');
             nextButton.disabled = false;
             nextButton.style.opacity = '1';
             nextButton.style.cursor = 'pointer';
@@ -801,7 +1088,7 @@
                 document.getElementById('modalQuestion').innerHTML = 
                     '<span style="color: #FF6B6B; font-weight: bold;">정말로 A패스 멤버십을 가입하고 3,000원 할인을 받으시겠습니까?</span>';
                 document.getElementById('emotionalMsg').innerHTML = 
-                    '❌ 아니오, 저는 혜택을 포기하고 돈을 더 내고 결제를 진행하겠습니다';
+                    '❌ 아니요, 혜택을 포기하고 돈을 더 내고 결제를 진행하겠습니다';
             } else {
                 document.getElementById('modalQuestion').innerHTML = 
                     '<span style="color: #666;">일반 결제로 진행하시겠습니까?</span>';
@@ -834,6 +1121,16 @@
             document.querySelector('.completion-page').classList.add('active');
         }
 
+        function goToAnalysis() {
+            document.querySelector('.completion-page').classList.remove('active');
+            document.querySelector('.analysis-page').classList.add('active');
+        }
+
+        function goToCompletion() {
+            document.querySelector('.analysis-page').classList.remove('active');
+            document.querySelector('.completion-page').classList.add('active');
+        }
+
         function resetProcess() {
             // 상태 초기화
             timerStartTime = null;
@@ -853,17 +1150,18 @@
             document.querySelectorAll('.comparison-card').forEach(card => {
                 card.classList.remove('selected');
             });
-            document.getElementById('nextButton').disabled = true;
-            document.getElementById('nextButton').style.opacity = '0.5';
-            document.getElementById('nextButton').style.cursor = 'not-allowed';
+            document.getElementById('nextButtonPage2').disabled = true;
+            document.getElementById('nextButtonPage2').style.opacity = '0.5';
+            document.getElementById('nextButtonPage2').style.cursor = 'not-allowed';
 
             // 1단계 체크박스 초기화
             document.getElementById('membershipCheckbox').checked = true;
+            document.getElementById('termsSection').classList.remove('show');
             updatePrice();
         }
 
         // 초기화
-        document.getElementById('membershipCheckbox').addEventListener('change', updatePrice);
+        document.getElementById('membershipCheckbox').addEventListener('change', toggleTerms);
         updatePrice();
     </script>
 </body>
