@@ -122,34 +122,35 @@ body {
 .page.active {
     display: block;
 }
-.header-status-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.timer-section {
     background: #fff3cd;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 20px;
     border: 2px solid #ffc107;
-}
-.money-display {
-    font-size: 20px;
-    font-weight: bold;
-    color: #2c3e50;
-}
-.timer-section-box {
-    text-align: right;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 .timer {
-    font-size: 32px;
+    font-size: 36px;
     font-weight: bold;
     color: #FF6B6B;
     font-family: 'Courier New', monospace;
 }
 .timer-label {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
-    margin-top: 2px;
+    margin-top: 5px;
+}
+.budget-display {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    background: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
 }
 /* ===== 1단계 스타일 ===== */
 .stage-1 {
@@ -190,67 +191,4 @@ body {
 }
 .checkbox-wrapper {
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-.checkbox-wrapper input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    cursor: pointer;
-    accent-color: #FF6B6B;
-}
-.membership-text {
-    font-weight: 600;
-    color: #333;
-}
-.membership-price {
-    color: #FF6B6B;
-    font-weight: bold;
-    font-size: 16px;
-}
-.discount-note {
-    font-size: 13px;
-    color: #FF6B6B;
-    margin-top: 8px;
-    font-weight: 500;
-}
-.price-summary {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-.price-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    color: #333;
-}
-.price-row.total {
-    font-weight: bold;
-    font-size: 18px;
-    border-top: 2px solid #ddd;
-    padding-top: 12px;
-    margin-top: 12px;
-}
-.hidden-price {
-    font-size: 11px;
-    color: #999;
-    margin-top: 5px;
-    font-weight: 300;
-}
-/* ===== 약관 드롭다운 ===== */
-.terms-section {
-    margin-bottom: 20px;
-    display: none;
-}
-.terms-section.show {
-    display: block;
-}
-.terms-dropdown {
-    background: #f0f8ff;
-    border: 2px solid #87CEEB;
-    border-radius: 8px;
-    max-height: 300px
+    align-items
