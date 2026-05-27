@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다크패턴 UI 경험 - 결제 과정</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #87CEEB 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .step-indicator {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .step-indicator h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            color: #FF6B6B;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* ===== 1단계 스타일 ===== */
+        .stage-1 {
+            display: none;
+        }
+
+        .stage-1.active {
+            display: block;
+        }
+
+        .cart-items {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-price {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .membership-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #ffc107;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #FF6B6B;
+        }
+
+        .membership-text {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .membership-price {
+            color: #FF6B6B;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .discount-note {
+            font-size: 13px;
+            color: #FF6B6B;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .price-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #333;
+        }
+
+        .price-row.total {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #ddd;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .hidden-price {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* ===== 2단계 스타일 ===== */
+        .stage-2 {
+            display: none;
+        }
+
+        .stage-2.active {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .modal-message {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .modal-highlight {
+            color: #FF6B6B;
+            font-weight: bold;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #999;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            color: #777;
+        }
+
+        /* ===== 3단계 스타일 ===== */
+        .stage-3 {
+            display: none;
+        }
+
+        .stage-3.active {
+            display: block;
+        }
+
+        .final-modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .final-modal-message {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .emotional-message {
+            background: #ffe0e0;
+            padding: 15px;
+            border-radius: 8px;
+            color: #d32f2f;
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #bbb;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-cancel:hover {
+            background: #fafafa;
+            color: #999;
+        }
+
+        .button-footer {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .button-footer button {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.2s;
+        }
+
+        .button-footer button:hover {
+            color: #666;
+        }
+
+        /* ===== 메인 버튼 ===== */
+        .action-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .completion-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .completion-message h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #FF6B6B;
+        }
+
+        .completion-message p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .stage-navigation {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .reset-btn {
+            background: #E8E8E8;
+            color: #666;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #D8D8D8;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- 모달 오버레이 -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+    <div class="container">
+        <!-- ===== 1단계: 장바구니 화면 ===== -->
+        <div class="stage-1 active">
+            <div class="step-indicator">
+                <h1>🛒 장바구니</h1>
+                <span class="step-number">단계 1: 특정옵션 사전선택 + 숨은 가격 결정</span>
+            </div>
+
+            <div class="cart-items">
+                <div class="cart-item">
+                    <span class="item-name">된장찌개 정식</span>
+                    <span class="item-price">12,000원</span>
+                </div>
+                <div class="cart-item">
+                    <span class="item-name">밥</span>
+                    <span class="item-price">무료</span>
+                </div>
+                <div class="cart-item">
+                    <span class="item-name">국물 반찬</span>
+                    <span class="item-price">무료</span>
+                </div>
+            </div>
+
+            <div class="membership-section">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="membershipCheckbox" checked>
+                    <label for="membershipCheckbox" class="membership-text">
+                        와우/배민패스 멤버십 가입하고 <span class="membership-price">3,000원 할인</span>받기
+                    </label>
+                </div>
+                <div class="discount-note">월 4,900원</div>
+            </div>
+
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>상품 금액</span>
+                    <span>12,000원</span>
+                </div>
+                <div class="price-row">
+                    <span>배달료</span>
+                    <span>2,500원</span>
+                </div>
+                <div class="price-row" id="membershipRow" style="color: #FF6B6B;">
+                    <span>멤버십 요금</span>
+                    <span>4,900원</span>
+                </div>
+                <div class="price-row" id="discountRow" style="color: #27ae60;">
+                    <span>할인</span>
+                    <span>-3,000원</span>
+                </div>
+                <div class="price-row total">
+                    <span>결제 금액</span>
+                    <span id="totalPrice">16,400원</span>
+                </div>
+                <div class="hidden-price">
+                    ※ 멤버십은 매월 자동으로 갱신되며, 취소는 앱 내 [설정]에서 가능합니다
+                </div>
+            </div>
+
+            <button class="action-button" onclick="goToStage2()">결제 진행</button>
+        </div>
+
+        <!-- ===== 2단계: 결제 버튼 확인 팝업 ===== -->
+        <div class="stage-2">
+            <div class="step-indicator">
+                <h1>⚠️ 결제 확인</h1>
+                <span class="step-number">단계 2: 잘못된 계층구조 + 속임수 질문</span>
+            </div>
+        </div>
+
+        <!-- ===== 3단계: 최종 결제 승인 ===== -->
+        <div class="stage-3">
+            <div class="step-indicator">
+                <h1>🔒 최종 승인</h1>
+                <span class="step-number">단계 3: 반복적 간섭 + 감정적 언어사용</span>
+            </div>
+        </div>
+
+        <!-- 완료 메시지 -->
+        <div id="completionDiv" style="display: none;">
+            <div class="completion-message">
+                <h2>✅ 결제 완료</h2>
+                <p>모든 단계를 체험하셨습니다.</p>
+                <p>이 UI는 다크패턴의 위험성을 보여주기 위한 교육 자료입니다.</p>
+            </div>
+            <div class="stage-navigation">
+                <button class="reset-btn" onclick="resetStages()">처음부터 다시 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2단계 팝업 -->
+    <div id="stage2Modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">정말로 할인 혜택을 포기하시겠습니까?</div>
+            <div class="modal-message">
+                <p>🚨 <span class="modal-highlight">오늘만 주는 3,000원 할인 혜택</span>을 포기하고</p>
+                <p style="margin-top: 10px;">손해를 보시겠습니까?</p>
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" onclick="continueWithMembership()">
+                    멤버십 혜택 유지하고 결제 (16,400원)
+                </button>
+                <button class="btn-secondary" onclick="proceedWithoutMembership()">
+                    멤버십 없이 일반 결제
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3단계 팝업 -->
+    <div id="stage3Modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="final-modal-title">⚠️ 한 번 더 확인해주세요</div>
+            <div class="final-modal-message">
+                결제를 진행하려면 비밀번호를 입력하셔야 합니다.
+            </div>
+            <div class="emotional-message">
+                ❌ 아니오, 저는 혜택을 포기하고 돈을 더 내겠습니다
+            </div>
+            <div>
+                <button class="btn-confirm" onclick="completePayment()">
+                    비밀번호 입력 및 결제
+                </button>
+                <button class="btn-cancel" onclick="cancelPayment()">
+                    결제 취소
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let membershipChecked = true;
+
+        function updatePrice() {
+            membershipChecked = document.getElementById('membershipCheckbox').checked;
+            const membershipRow = document.getElementById('membershipRow');
+            const discountRow = document.getElementById('discountRow');
+            const totalPrice = document.getElementById('totalPrice');
+
+            if (membershipChecked) {
+                membershipRow.style.display = 'flex';
+                discountRow.style.display = 'flex';
+                totalPrice.textContent = '16,400원';
+            } else {
+                membershipRow.style.display = 'none';
+                discountRow.style.display = 'none';
+                totalPrice.textContent = '14,500원';
+            }
+        }
+
+        document.getElementById('membershipCheckbox').addEventListener('change', updatePrice);
+
+        function goToStage2() {
+            // 멤버십 체크가 해제되었으면 경고
+            if (!membershipChecked) {
+                alert('✓ 멤버십 없이 결제합니다.');
+                goToStage3WithoutMembership();
+            } else {
+                // 멤버십이 체크되어있으면 2단계 팝업 표시
+                document.getElementById('stage2Modal').classList.add('active');
+                document.querySelector('.stage-1').classList.remove('active');
+                document.querySelector('.stage-2').classList.add('active');
+            }
+        }
+
+        function continueWithMembership() {
+            document.getElementById('stage2Modal').classList.remove('active');
+            document.getElementById('stage3Modal').classList.add('active');
+            document.querySelector('.stage-2').classList.remove('active');
+            document.querySelector('.stage-3').classList.add('active');
+        }
+
+        function proceedWithoutMembership() {
+            document.getElementById('stage2Modal').classList.remove('active');
+            goToStage3WithoutMembership();
+        }
+
+        function goToStage3WithoutMembership() {
+            document.getElementById('stage3Modal').classList.add('active');
+            document.querySelector('.stage-2').classList.remove('active');
+            document.querySelector('.stage-3').classList.add('active');
+        }
+
+        function completePayment() {
+            document.getElementById('stage3Modal').classList.remove('active');
+            document.querySelector('.stage-3').classList.remove('active');
+            document.getElementById('completionDiv').style.display = 'block';
+        }
+
+        function cancelPayment() {
+            document.getElementById('stage3Modal').classList.remove('active');
+            document.querySelector('.stage-3').classList.remove('active');
+            document.querySelector('.stage-1').classList.add('active');
+        }
+
+        function resetStages() {
+            // 모든 모달 닫기
+            document.getElementById('stage2Modal').classList.remove('active');
+            document.getElementById('stage3Modal').classList.remove('active');
+
+            // 모든 단계 숨기기
+            document.querySelector('.stage-1').classList.remove('active');
+            document.querySelector('.stage-2').classList.remove('active');
+            document.querySelector('.stage-3').classList.remove('active');
+            document.getElementById('completionDiv').style.display = 'none';
+
+            // 1단계 표시
+            document.querySelector('.stage-1').classList.add('active');
+
+            // 체크박스 초기화
+            document.getElementById('membershipCheckbox').checked = true;
+            membershipChecked = true;
+            updatePrice();
+        }
+
+        // 초기 가격 계산
+        updatePrice();
+    </script>
+</body>
+</html>
