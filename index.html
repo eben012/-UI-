@@ -1,1211 +1,1168 @@
-HTML
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>다크패턴 UI 경험 - 배달 결제 프로세스</title>
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #87CEEB 0%, #87CEEB 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-.container {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    max-width: 800px;
-    width: 100%;
-    padding: 40px;
-}
-.step-indicator {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-}
-.step-indicator h1 {
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-.step-number {
-    color: #666;
-    font-weight: normal;
-    font-size: 14px;
-}
-/* ===== 네비게이션 ===== */
-.navigation {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 25px;
-}
-.nav-button {
-    background: #E8E8E8;
-    color: #666;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-    flex: 1;
-}
-.nav-button:hover:not(:disabled) {
-    background: #D8D8D8;
-    color: #333;
-}
-.nav-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.nav-button.prev {
-    flex: 0.5;
-}
-.nav-button.next {
-    flex: 0.5;
-}
-/* ===== 시작 대기 화면 ===== */
-.stage-waiting {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    min-height: 400px;
-}
-.stage-waiting h2 {
-    font-size: 32px;
-    color: #333;
-}
-.stage-waiting p {
-    font-size: 18px;
-    color: #666;
-}
-.waiting-info {
-    background: #f0f8ff;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: #555;
-    font-size: 16px;
-    max-width: 400px;
-}
-.start-button {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
-    color: white;
-    border: none;
-    padding: 18px 50px;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
-}
-.start-button:hover {
-    transform: translateY(-3px);\
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-}
-/* ===== 공통 스타일 ===== */
-.page {
-    display: none;
-}
-.page.active {
-    display: block;
-}
-.header-status {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 15px;
-}
-.timer-section {
-    background: #fff3cd;
-    padding: 10px 15px;
-    border-radius: 10px;
-    border: 2px solid #ffc107;
-    text-align: center;
-    flex: 1;
-}
-.balance-section {
-    background: #e2f0d9;
-    padding: 10px 15px;
-    border-radius: 10px;
-    border: 2px solid #385723;
-    text-align: center;
-    flex: 1;
-}
-.timer {
-    font-size: 28px;
-    font-weight: bold;
-    color: #FF6B6B;
-    font-family: 'Courier New', monospace;
-}
-.balance {
-    font-size: 28px;
-    font-weight: bold;
-    color: #385723;
-    font-family: 'Courier New', monospace;
-}
-.timer-label, .balance-label {
-    font-size: 13px;
-    color: #666;
-    margin-top: 3px;
-}
-/* ===== 1단계 스타일 ===== */
-.stage-1 {
-    display: none;
-}
-.stage-1.active {
-    display: block;
-}
-.cart-items {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #e0e0e0;
-}
-.cart-item:last-child {
-    border-bottom: none;
-}
-.item-name {
-    font-weight: 500;
-    color: #333;
-}
-.item-price {
-    color: #666;
-    font-weight: 600;
-}
-.membership-section {
-    background: #fff3cd;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 2px solid #ffc107;
-}
-.checkbox-wrapper {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-.checkbox-wrapper input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    cursor: pointer;
-    accent-color: #FF6B6B;
-}
-.membership-text {
-    font-weight: 600;
-    color: #333;
-}
-.membership-price {
-    color: #FF6B6B;
-    font-weight: bold;
-    font-size: 16px;
-}
-.discount-note {
-    font-size: 13px;
-    color: #FF6B6B;
-    margin-top: 8px;
-    font-weight: 500;
-}
-.price-summary {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-.price-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    color: #333;
-}
-.price-row.total {
-    font-weight: bold;
-    font-size: 18px;
-    border-top: 2px solid #ddd;
-    padding-top: 12px;
-    margin-top: 12px;
-}
-.hidden-price {
-    font-size: 11px;
-    color: #999;
-    margin-top: 5px;
-    font-weight: 300;
-}
-/* ===== 약관 드롭다운 ===== */
-.terms-section {
-    margin-bottom: 20px;
-    display: none;
-}
-.terms-section.show {
-    display: block;
-}
-.terms-dropdown {
-    background: #f0f8ff;
-    border: 2px solid #87CEEB;
-    border-radius: 8px;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 20px;
-    margin-bottom: 15px;
-    line-height: 1.6;
-    color: #555;
-    font-size: 13px;
-}
-.terms-dropdown h3 {
-    margin-bottom: 15px;
-    color: #333;
-}
-.terms-dropdown p {
-    margin-bottom: 10px;
-}
-/* ===== 2단계 스타일 ===== */
-.comparison-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 25px;
-}
-.comparison-card {
-    padding: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: 3px solid #ddd;
-}
-.comparison-card.membership {
-    background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
-    border: 3px solid #FF6B6B;
-    transform: scale(1.05);
-    box-shadow: 0 5px 20px rgba(255, 107, 107, 0.2);
-}
-.comparison-card.general {
-    background: #f5f5f5;
-    border: 3px solid #ccc;
-}
-.comparison-card.selected {
-    border: 3px solid #4CAF50;
-    background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
-}
-.comparison-card:hover {
-    transform: translateY(-5px);
-}
-.card-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #333;
-}
-.membership .card-title {
-    color: #FF6B6B;
-}
-.badge {
-    display: inline-block;
-    background: #FF6B6B;
-    color: white;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-.price-detail {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #555;
-}
-.final-price {
-    font-size: 24px;
-    font-weight: bold;
-    color: #FF6B6B;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 2px solid rgba(255, 107, 107, 0.3);
-}
-/* ===== 3단계 스타일 ===== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    overflow-y: auto;
-}
-.modal-overlay.active {
-    display: flex;
-}
-.modal-content {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    text-align: center;
-    margin: 20px auto;
-}
-.modal-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-}
-.modal-message {
-    color: #555;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-.emotional-message {
-    background: #ffe0e0;
-    padding: 15px;
-    border-radius: 8px;
-    color: #d32f2f;
-    font-weight: 500;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.btn-primary {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
-    color: white;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.btn-primary:hover {
-    transform: translateY(-2px);\
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-}
-.btn-secondary {
-    background: #f0f0f0;
-    color: #999;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.btn-secondary:hover {
-    background: #e8e8e8;\
-    color: #777;
-}
-.action-button {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.action-button:hover {
-    transform: translateY(-2px);\
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-}
-/* ===== A패스 팝업 ===== */
-.apass-popup-content {
-    text-align: left;
-}
-.apass-headline {
-    font-size: 28px;
-    font-weight: 900;
-    color: #FF6B6B;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #FF6B6B, #FFB6B6);\
-    -webkit-background-clip: text;\
-    -webkit-text-fill-color: transparent;\
-    background-clip: text;\
-    text-shadow: none;
-}
-.apass-benefits {
-    margin-bottom: 25px;
-}
-.benefit-item {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 15px;
-    font-size: 15px;
-    color: #333;
-    font-weight: 500;
-}
-.benefit-item::before {
-    content: "✅";
-    margin-right: 12px;
-    font-size: 18px;
-    flex-shrink: 0;
-}
-.benefit-item strong {
-    display: block;
-    margin-bottom: 3px;
-    color: #FF6B6B;
-}
-.apass-hidden-terms {
-    background: #f5f5f5;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 12px;
-    color: #999;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    border-left: 4px solid #FF6B6B;
-}
-.apass-hidden-terms strong {
-    color: #666;
-}
-.apass-button-group {
-    display: flex;
-    gap: 10px;
-}
-.apass-button-group button {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.apass-approve-btn {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
-    color: white;
-}
-.apass-approve-btn:hover {
-    transform: translateY(-2px);\
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-}
-.apass-reject-btn {
-    background: #f0f0f0;
-    color: #999;
-}
-.apass-reject-btn:hover {
-    background: #e8e8e8;\
-    color: #666;
-}
-/* ===== 멤버십 가입 완료 ===== */
-.membership-completion {
-    text-align: center;
-    padding: 40px 20px;
-}
-.completion-icon {
-    font-size: 60px;
-    margin-bottom: 20px;
-}
-.completion-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
-}
-.completion-message {
-    color: #666;
-    margin-bottom: 25px;
-    line-height: 1.6;
-}
-.benefit-summary {
-    background: #fff3cd;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    border: 2px solid #ffc107;
-}
-.benefit-summary h3 {
-    color: #333;
-    margin-bottom: 12px;
-    font-size: 16px;
-}
-.benefit-list {
-    text-align: left;
-    color: #555;
-    font-size: 14px;
-    line-height: 1.8;
-}
-.benefit-list li {
-    margin-bottom: 8px;
-}
-/* ===== 완료 페이지 ===== */
-.completion-page {
-    text-align: center;
-}
-.completion-result {
-    padding: 40px 20px;
-}
-.completion-result h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: #FF6B6B;
-}
-.result-box {
-    background: #f8f9fa;
-    padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 25px;
-    border: 2px solid #e0e0e0;
-}
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #ddd;
-    font-size: 16px;
-    color: #333;
-}
-.result-item:last-child {
-    border-bottom: none;
-}
-.result-label {
-    font-weight: 600;
-    color: #555;
-}
-.result-value {
-    font-weight: bold;
-    color: #FF6B6B;
-    font-size: 18px;
-}
-.reset-btn {
-    background: #E8E8E8;
-    color: #666;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.2s;
-    margin-right: 10px;
-}
-.reset-btn:hover {
-    background: #D8D8D8;
-    color: #333;
-}
-.view-analysis-btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-.view-analysis-btn:hover {
-    background: #45a049;
-}
-/* ===== 분석 페이지 ===== */
-.analysis-page {
-    padding: 20px 0;
-}
-.analysis-page h2 {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 30px;
-    color: #333;
-}
-.dark-pattern-item {
-    background: #f8f9fa;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    border-left: 5px solid #FF6B6B;
-}
-.pattern-number {
-    background: #FF6B6B;
-    color: white;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 10px;
-}
-.pattern-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
-    display: inline-block;
-}
-.pattern-description {
-    color: #555;
-    line-height: 1.6;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-.pattern-stage {
-    background: #fff3cd;
-    padding: 10px;
-    border-radius: 6px;
-    color: #666;
-    font-size: 13px;
-    font-weight: 500;
-}
-.button-row {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-}
-.button-row button {
-    padding: 12px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.back-to-completion-btn {
-    background: #E8E8E8;
-    color: #666;
-}
-.back-to-completion-btn:hover {
-    background: #D8D8D8;
-    color: #333;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다크패턴 UI 경험 - 배달 결제 프로세스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #87CEEB 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .step-indicator {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .step-indicator h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .step-number {
+            color: #666;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        /* ===== 네비게이션 ===== */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .nav-button {
+            background: #E8E8E8;
+            color: #666;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: #D8D8D8;
+            color: #333;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-button.prev {
+            flex: 0.5;
+        }
+
+        .nav-button.next {
+            flex: 0.5;
+        }
+
+        /* ===== 시작 대기 화면 ===== */
+        .stage-waiting {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            min-height: 400px;
+        }
+
+        .stage-waiting h2 {
+            font-size: 32px;
+            color: #333;
+        }
+
+        .stage-waiting p {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .waiting-info {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #555;
+            font-size: 16px;
+            max-width: 400px;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        /* ===== 공통 스타일 ===== */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .timer-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ffc107;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            color: #FF6B6B;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* ===== 1단계 스타일 ===== */
+        .stage-1 {
+            display: none;
+        }
+
+        .stage-1.active {
+            display: block;
+        }
+
+        .cart-items {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item-price {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .membership-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #ffc107;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #FF6B6B;
+        }
+
+        .membership-text {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .membership-price {
+            color: #FF6B6B;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .discount-note {
+            font-size: 13px;
+            color: #FF6B6B;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .price-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #333;
+        }
+
+        .price-row.total {
+            font-weight: bold;
+            font-size: 18px;
+            border-top: 2px solid #ddd;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .hidden-price {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* ===== 약관 드롭다운 ===== */
+        .terms-section {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .terms-section.show {
+            display: block;
+        }
+
+        .terms-dropdown {
+            background: #f0f8ff;
+            border: 2px solid #87CEEB;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .terms-dropdown h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .terms-dropdown p {
+            margin-bottom: 10px;
+        }
+
+        /* ===== 2단계 스타일 ===== */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .comparison-card {
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid #ddd;
+        }
+
+        .comparison-card.membership {
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
+            border: 3px solid #FF6B6B;
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.2);
+        }
+
+        .comparison-card.general {
+            background: #f5f5f5;
+            border: 3px solid #ccc;
+        }
+
+        .comparison-card.selected {
+            border: 3px solid #4CAF50;
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .membership .card-title {
+            color: #FF6B6B;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #FF6B6B;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .price-detail {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .final-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF6B6B;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 107, 107, 0.3);
+        }
+
+        /* ===== 3단계 스타일 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .modal-message {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .emotional-message {
+            background: #ffe0e0;
+            padding: 15px;
+            border-radius: 8px;
+            color: #d32f2f;
+            font-weight: 500;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #999;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8e8;
+            color: #777;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        /* ===== 완료 페이지 ===== */
+        .completion-page {
+            text-align: center;
+        }
+
+        .completion-message {
+            padding: 40px 20px;
+        }
+
+        .completion-message h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #FF6B6B;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #FF6B6B;
+            font-size: 18px;
+        }
+
+        .reset-btn {
+            background: #E8E8E8;
+            color: #666;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-right: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #D8D8D8;
+            color: #333;
+        }
+
+        .view-analysis-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .view-analysis-btn:hover {
+            background: #45a049;
+        }
+
+        /* ===== 분석 페이지 ===== */
+        .analysis-page {
+            padding: 20px 0;
+        }
+
+        .analysis-page h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .dark-pattern-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #FF6B6B;
+        }
+
+        .pattern-number {
+            background: #FF6B6B;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .pattern-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .pattern-description {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .pattern-stage {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button-row button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-to-completion-btn {
+            background: #E8E8E8;
+            color: #666;
+        }
+
+        .back-to-completion-btn:hover {
+            background: #D8D8D8;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
+    <!-- 모달 오버레이 -->
+    <div class="modal-overlay" id="modalOverlay"></div>
 
-<div class="modal-overlay" id="modalOverlay"></div>
-
-<div class="container">
-    <div class="page waiting-page active">
-        <div class="stage-waiting">
-            <h2>🍕 배달 서비스</h2>
-            <p>주문을 진행하시겠습니까?</p>
-            <div class="waiting-info">
-                <p>배달 결제 프로세스를 경험해봅시다.</p>
-                <p style="margin-top: 10px; font-size: 14px;">보유 금액: <span style="font-weight: bold; color: #385723;">14,500원</span></p>
-                <p style="margin-top: 5px; font-size: 14px;">모든 단계를 완료하는데 걸리는 시간이 기록됩니다.</p>
+    <div class="container">
+        <!-- ===== 시작 화면 ===== -->
+        <div class="page waiting-page active">
+            <div class="stage-waiting">
+                <h2>🍕 배달 서비스</h2>
+                <p>주문을 진행하시겠습니까?</p>
+                <div class="waiting-info">
+                    <p>배달 결제 프로세스를 경험해봅시다.</p>
+                    <p style="margin-top: 10px; font-size: 14px;">모든 단계를 완료하는데 걸리는 시간이 기록됩니다.</p>
+                </div>
+                <button class="start-button" onclick="startProcess()">배달 진행하기</button>
             </div>
-            <button class="start-button" onclick="startProcess()">배달 진행하기</button>
         </div>
-    </div>
 
-    <div id="commonStatusHeader" style="display: none;">
-        <div class="header-status">
+        <!-- ===== 1단계: 장바구니 화면 ===== -->
+        <div class="page page-1">
             <div class="timer-section">
-                <div class="timer" id="timerDisplay">00:00</div>
+                <div class="timer" id="timer">00:00</div>
                 <div class="timer-label">⏱️ 진행 시간</div>
             </div>
-            <div class="balance-section">
-                <div class="balance" id="balanceDisplay">14,500원</div>
-                <div class="balance-label">💰 보유 금액</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="page page-1">
-        <div class="step-indicator">
-            <h1>🛒 장바구니</h1>
-            <span class="step-number">1단계</span>
-        </div>
-        <div class="navigation">
-            <button class="nav-button prev" onclick="goToWaiting()" disabled>← 이전</button>
-            <button class="nav-button next" onclick="proceedToPage2()">다음 →</button>
-        </div>
-        <div class="cart-items">
-            <div class="cart-item">
-                <span class="item-name">된장찌개 정식</span>
-                <span class="item-price">12,000원</span>
+            <div class="step-indicator">
+                <h1>🛒 장바구니</h1>
+                <span class="step-number">1단계</span>
             </div>
-            <div class="cart-item">
-                <span class="item-name">밥</span>
-                <span class="item-price">무료</span>
-            </div>
-            <div class="cart-item">
-                <span class="item-name">국물 반찬</span>
-                <span class="item-price">무료</span>
-            </div>
-        </div>
-        <div class="membership-section">
-            <div class="checkbox-wrapper">
-                <input type="checkbox" id="membershipCheckbox" checked onchange="calculatePrices()">
-                <label for="membershipCheckbox" class="membership-text">
-                    A패스 멤버십 가입하고 <span class="membership-price">3,000원 할인</span>받기
-                </label>
-            </div>
-            <div class="discount-note">월 6,990원</div>
-        </div>
-        <div class="terms-section id="termsSection">
-            <div class="terms-dropdown">
-                <h3>📋 A패스 멤버십 이용약관</h3>
-                <p><strong>제1조 서비스 개요</strong></p>
-                <p>A패스는 배달 및 외식 서비스 이용 시 할인 혜택을 제공하는 구독형 멤버십 서비스입니다.</p>
-                <p><strong>제2조 서비스 요금</strong></p>
-                <p>월 구독료: 6,990원</p>
-                <p>할인 혜택: 주문 시 3,000원 할인 (조건부)</p>
-                <p>구독료는 매월 자동으로 갱신됩니다.</p>
-                <p><strong>제3조 자동 갱신</strong></p>
-                <p>A패스는 결제 후 매월 자동으로 갱신됩니다. 사용자는 언제든지 앱의 설정 메뉴에서 구독을 취소할 수 있습니다.</p>
-                <p><strong>제4조 환불 정책</strong></p>
-                <p>구독료는 기본적으로 환불되지 않습니다. 다만, 서비스 오류로 인한 부당 요금은 환불 대상이 됩니다.</p>
-                <p><strong>제5조 약관 변경</strong></p>
-                <p>회사는 사전 통지 없이 약관을 변경할 수 있습니다.</p>
-            </div>
-        </div>
-        <div class="price-summary">
-            <div class="price-row">
-                <span>상품 금액</span>
-                <span>12,000원</span>
-            </div>
-            <div class="price-row" id="deliveryRow">
-                <span>배달료</span>
-                <span id="deliveryPriceText">2,500원</span>
-            </div>
-            <div class="price-row" id="membershipRow" style="color: #FF6B6B;">
-                <span>멤버십 요금</span>
-                <span id="membershipPriceText">6,990원</span>
-            </div>
-            <div class="price-row" id="discountRow" style="color: #27ae60;">
-                <span>할인</span>
-                <span>-3,000원</span>
-            </div>
-            <div class="price-row total">
-                <span>결제 금액</span>
-                <span id="totalPrice1">15,990원</span>
-            </div>
-            <div class="hidden-price">
-                ※ 멤버십은 매월 자동으로 갱신되며, 취소는 앱 내 [설정]에서 가능합니다
-            </div>
-        </div>
-    </div>
 
-    <div class="page page-2">
-        <div class="step-indicator">
-            <h1>💳 결제 옵션 선택</h1>
-            <span class="step-number">2단계</span>
-        </div>
-        <div class="navigation">
-            <button class="nav-button prev" onclick="goToPage1()">← 이전</button>
-            <button class="nav-button next" onclick="proceedToPage3()" id="nextButtonPage2" disabled style="opacity: 0.5; cursor: not-allowed;">다음 →</button>
-        </div>
-        <div style="margin-bottom: 20px; color: #666; text-align: center;">
-            <p>어떤 방식으로 결제하시겠습니까?</p>
-        </div>
-        <div class="comparison-container">
-            <div class="comparison-card membership" id="cardMembership" onclick="selectPaymentOption('membership')">
-                <div class="badge">✨ 추천</div>
-                <div class="card-title">A패스 멤버십</div>
-                <div class="price-detail">
-                    <strong>혜택:</strong>
-                </div>
-                <div class="price-detail">• 3,000원 할인</div>
-                <div class="price-detail">• 무료 배달</div>
-                <div class="price-detail">• 매월 갱신</div>
-                <div class="final-price" id="membershipTotal">9,000원</div>
-                <div class="price-detail" style="font-size: 12px; color: #999; margin-top: 10px;">
-                    멤버십 이용 금액을 제외한 혜택가, 월 6,990원 구독료 별도
-                </div>
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToWaiting()" disabled>← 이전</button>
+                <button class="nav-button next" onclick="goToPage2()">다음 →</button>
             </div>
-            <div class="comparison-card general" id="cardGeneral" onclick="selectPaymentOption('general')">
-                <div class="card-title">일반 결제</div>
-                <div class="price-detail">
-                    <strong>특징:</strong>
-                </div>
-                <div class="price-detail">• 추가 요금 없음</div>
-                <div class="price-detail">• 일회성 결제</div>
-                <div class="price-detail">• 언제든 취소 가능</div>
-                <div class="final-price" id="generalTotal">14,500원</div>
-                <div class="price-detail" style="font-size: 12px; color: #999; margin-top: 10px;">
-                    (배달료 포함)
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="page page-3">
-        <div class="step-indicator">
-            <h1>🔒 최종 결제</h1>
-            <span class="step-number">3단계</span>
-        </div>
-        <div class="navigation">
-            <button class="nav-button prev" onclick="goToPage2()">← 이전</button>
-            <button class="nav-button next" onclick="showFinalModal()">결제하기</button>
-        </div>
-        <div style="text-align: center; margin: 30px 0; color: #666;">
-            <p>선택된 결제 방식으로 주문을 완료하려면 아래 버튼을 클릭하세요</p>
-            <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
-                <p id="selectedPaymentDisplay" style="font-size: 16px; color: #333; font-weight: 600;">-</p>
+            <div class="cart-items">
+                <div class="cart-item">
+                    <span class="item-name">된장찌개 정식</span>
+                    <span class="item-price">12,000원</span>
+                </div>
+                <div class="cart-item">
+                    <span class="item-name">밥</span>
+                    <span class="item-price">무료</span>
+                </div>
+                <div class="cart-item">
+                    <span class="item-name">국물 반찬</span>
+                    <span class="item-price">무료</span>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="page completion-page">
-        <div class="completion-result">
-            <h2 id="completionHeader">결제 완료</h2>
-            <div class="result-box">
-                <div class="result-item">
-                    <span class="result-label">최종 주문 상태</span>
-                    <span class="result-value" id="resultStatusText" style="color: #d32f2f;">결제 실패</span>
+            <div class="membership-section">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="membershipCheckbox" checked onchange="toggleTerms()">
+                    <label for="membershipCheckbox" class="membership-text">
+                        A패스 멤버십 가입하고 <span class="membership-price">3,000원 할인</span>받기
+                    </label>
                 </div>
-                <div class="result-item">
-                    <span class="result-label">소요 시간</span>
-                    <span class="result-value" id="resultTimeText">00:00</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">남은 보유 금액</span>
-                    <span class="result-value" id="resultBalanceText" style="color: #385723;">14,500원</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">선택한 결제 방식</span>
-                    <span class="result-value" id="resultPaymentMethodText">-</span>
+                <div class="discount-note">월 4,900원</div>
+            </div>
+
+            <div class="terms-section" id="termsSection">
+                <div class="terms-dropdown">
+                    <h3>📋 A패스 멤버십 이용약관</h3>
+                    <p><strong>제1조 서비스 개요</strong></p>
+                    <p>A패스는 배달 및 외식 서비스 이용 시 할인 혜택을 제공하는 구독형 멤버십 서비스입니다.</p>
+                    
+                    <p><strong>제2조 서비스 요금</strong></p>
+                    <p>월 구독료: 4,900원</p>
+                    <p>할인 혜택: 주문 시 3,000원 할인 (조건부)</p>
+                    <p>구독료는 매월 자동으로 갱신됩니다.</p>
+                    
+                    <p><strong>제3조 자동 갱신</strong></p>
+                    <p>A패스는 결제 후 매월 자동으로 갱신됩니다. 사용자는 언제든지 앱의 설정 메뉴에서 구독을 취소할 수 있습니다.</p>
+                    
+                    <p><strong>제4조 환불 정책</strong></p>
+                    <p>구독료는 기본적으로 환불되지 않습니다. 다만, 서비스 오류로 인한 부당 요금은 환불 대상이 됩니다.</p>
+                    
+                    <p><strong>제5조 약관 변경</strong></p>
+                    <p>회사는 사전 통지 없이 약관을 변경할 수 있습니다.</p>
                 </div>
             </div>
+
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>상품 금액</span>
+                    <span>12,000원</span>
+                </div>
+                <div class="price-row">
+                    <span>배달료</span>
+                    <span>2,500원</span>
+                </div>
+                <div class="price-row" id="membershipRow" style="color: #FF6B6B;">
+                    <span>멤버십 요금</span>
+                    <span>4,900원</span>
+                </div>
+                <div class="price-row" id="discountRow" style="color: #27ae60;">
+                    <span>할인</span>
+                    <span>-3,000원</span>
+                </div>
+                <div class="price-row total">
+                    <span>결제 금액</span>
+                    <span id="totalPrice1">16,400원</span>
+                </div>
+                <div class="hidden-price">
+                    ※ 멤버십은 매월 자동으로 갱신되며, 취소는 앱 내 [설정]에서 가능합니다
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 2단계: 결제 옵션 비교 ===== -->
+        <div class="page page-2">
+            <div class="timer-section">
+                <div class="timer" id="timer2">00:00</div>
+                <div class="timer-label">⏱️ 진행 시간</div>
+            </div>
+
+            <div class="step-indicator">
+                <h1>💳 결제 옵션 선택</h1>
+                <span class="step-number">2단계</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToPage1()">← 이전</button>
+                <button class="nav-button next" onclick="goToPage3()" id="nextButtonPage2" disabled style="opacity: 0.5; cursor: not-allowed;">다음 →</button>
+            </div>
+
+            <div style="margin-bottom: 20px; color: #666; text-align: center;">
+                <p>어떤 방식으로 결제하시겠습니까?</p>
+            </div>
+
+            <div class="comparison-container">
+                <!-- A패스 멤버십 선택지 -->
+                <div class="comparison-card membership" onclick="selectPaymentOption('membership', 16400)">
+                    <div class="badge">✨ 추천</div>
+                    <div class="card-title">A패스 멤버십</div>
+                    <div class="price-detail">
+                        <strong>혜택:</strong>
+                    </div>
+                    <div class="price-detail">
+                        • 3,000원 할인
+                    </div>
+                    <div class="price-detail">
+                        • 무료 배달 (조건)
+                    </div>
+                    <div class="price-detail">
+                        • 매월 갱신
+                    </div>
+                    <div class="final-price" id="membershipTotal">16,400원</div>
+                    <div class="price-detail" style="font-size: 12px; color: #999; margin-top: 10px;">
+                        월 구독료 4,900원 포함
+                    </div>
+                </div>
+
+                <!-- 일반 결제 선택지 -->
+                <div class="comparison-card general" onclick="selectPaymentOption('general', 14500)">
+                    <div class="card-title">일반 결제</div>
+                    <div class="price-detail">
+                        <strong>특징:</strong>
+                    </div>
+                    <div class="price-detail">
+                        • 추가 요금 없음
+                    </div>
+                    <div class="price-detail">
+                        • 일회성 결제
+                    </div>
+                    <div class="price-detail">
+                        • 언제든 취소 가능
+                    </div>
+                    <div class="final-price" id="generalTotal">14,500원</div>
+                    <div class="price-detail" style="font-size: 12px; color: #999; margin-top: 10px;">
+                        (배달료 포함)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 3단계: 최종 확인 ===== -->
+        <div class="page page-3">
+            <div class="timer-section">
+                <div class="timer" id="timer3">00:00</div>
+                <div class="timer-label">⏱️ 진행 시간</div>
+            </div>
+
+            <div class="step-indicator">
+                <h1>🔒 최종 결제</h1>
+                <span class="step-number">3단계</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToPage2()">← 이전</button>
+                <button class="nav-button next" onclick="showFinalModal()">결제하기</button>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0; color: #666;">
+                <p>선택된 결제 방식으로 주문을 완료하려면 아래 버튼을 클릭하세요</p>
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                    <p id="selectedPaymentDisplay" style="font-size: 16px; color: #333; font-weight: 600;">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 완료 페이지 ===== -->
+        <div class="page completion-page">
+            <div class="completion-message">
+                <h2>✅ 결제 완료</h2>
+                <p style="color: #666; margin-bottom: 25px;">주문이 접수되었습니다</p>
+
+                <div class="result-box">
+                    <div class="result-item">
+                        <span class="result-label">결제 방식:</span>
+                        <span class="result-value" id="paymentMethod">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">총 결제 금액:</span>
+                        <span class="result-value" id="finalAmount">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">소요 시간:</span>
+                        <span class="result-value" id="totalTime">-</span>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button class="reset-btn" onclick="resetProcess()">처음부터 다시</button>
+                    <button class="view-analysis-btn" onclick="goToAnalysis()">분석 보기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 분석 페이지 ===== -->
+        <div class="page analysis-page">
+            <div class="step-indicator">
+                <h1>📊 다크패턴 분석</h1>
+                <span class="step-number">이 결제 프로세스에 숨겨진 다크패턴들</span>
+            </div>
+
+            <div class="navigation">
+                <button class="nav-button prev" onclick="goToCompletion()" style="flex: 1;">← 이전</button>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">1</span>
+                <span class="pattern-title">특정옵션 사전선택 (Pre-selected Option)</span>
+                <div class="pattern-description">
+                    멤버십 체크박스가 기본적으로 체크되어 있습니다. 사용자가 명시적으로 선택하지 않아도 기업에 유리한 옵션이 이미 선택된 상태로 시작합니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 - 장바구니에서 발생</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">2</span>
+                <span class="pattern-title">숨은 가격 결정 (Hidden Price)</span>
+                <div class="pattern-description">
+                    멤버십 요금과 할인 가격이 가격 요약 하단에 매우 작은 글씨로 표시됩니다. 사용자가 전체 비용 구조를 명확히 이해하기 전에 결제를 진행할 수 있습니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 - 가격 요약 섹션</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">3</span>
+                <span class="pattern-title">잘못된 계층구조 (False Hierarchy)</span>
+                <div class="pattern-description">
+                    2단계에서 멤버십 옵션은 크고 눈에 띄게, 일반 결제 옵션은 흐려진 회색으로 표시됩니다. 시각적 강조를 통해 사용자를 조작하려 합니다.
+                </div>
+                <div class="pattern-stage">📍 2단계 - 결제 옵션 비교</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">4</span>
+                <span class="pattern-title">속임수 질문 (Trick Question)</span>
+                <div class="pattern-description">
+                    최종 확인 팝업에서 "혜택을 포기하고 돈을 더 내겠습니다"와 같은 부정적 프레이밍이 사용됩니다. 이는 사용자의 판단을 흐리게 하고 멤버십 선택을 유도합니다.
+                </div>
+                <div class="pattern-stage">📍 3단계 - 최종 결제 확인</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">5</span>
+                <span class="pattern-title">반복적 간섭 (Repeated Interference)</span>
+                <div class="pattern-description">
+                    단계를 진행할 때마다 멤버십 메시지가 반복해서 나타납니다. 사용자의 결정을 여러 번 방해함으로써 최종적으로 원하는 선택을 하도록 유도합니다.
+                </div>
+                <div class="pattern-stage">📍 1단계 → 2단계 → 3단계 전체</div>
+            </div>
+
+            <div class="dark-pattern-item">
+                <span class="pattern-number">6</span>
+                <span class="pattern-title">감정적 언어사용 (Emotional Language)</span>
+                <div class="pattern-description">
+                    "손해를 보겠습니까?", "혜택을 포기하겠습니까?"와 같은 감정적이고 위협적인 표현을 사용합니다. 이는 사용자에게 죄책감이나 두려움을 유발하여 선택을 조종합니다.
+                </div>
+                <div class="pattern-stage">📍 2단계 & 3단계 - 모달 메시지</div>
+            </div>
+
             <div class="button-row">
-                <button class="reset-btn" onclick="resetAll()">다시 시도</button>
-                <button class="view-analysis-btn" onclick="goToAnalysis()">다크패턴 분석 보기</button>
+                <button class="reset-btn" onclick="resetProcess()">처음부터 다시</button>
+                <button class="back-to-completion-btn" onclick="goToCompletion()">결과로 돌아가기</button>
             </div>
         </div>
     </div>
 
-    <div class="page analysis-page">
-        <h2>🧐 발견된 다크패턴 분석</h2>
-        <div id="analysisContainer"></div>
-        <div class="button-row">
-            <button class="back-to-completion-btn" onclick="backToCompletion()">← 결과로 돌아가기</button>
+    <!-- 최종 확인 팝업 -->
+    <div id="finalModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ 정말로 진행하시겠습니까?</div>
+            <div class="modal-message">
+                <p id="modalQuestion">문구</p>
+            </div>
+            <div class="emotional-message" id="emotionalMsg">
+                문구
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" onclick="proceedPayment()">
+                    네, 결제를 진행하겠습니다
+                </button>
+                <button class="btn-secondary" onclick="closeFinalModal()">
+                    취소
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-// 전역 변수 설정
-let userBalance = 14500;
-let startTime = 0;
-let timerInterval = null;
-let currentSeconds = 0;
-let selectedOption = null; // 'membership' 또는 'general'
-let isMembershipApproved = false; // 3단계 오버레이 팝업 승인 여부
+    <script>
+        // 상태 변수
+        let timerStartTime = null;
+        let timerInterval = null;
+        let selectedPaymentMethod = null;
+        let selectedAmount = 0;
 
-const foodPrice = 12000;
-const deliveryFee = 2500;
-const membershipFee = 6990;
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
 
-// 타이머 유틸리티 함수
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
-    return `${mins}:${secs}`;
-}
+        function updateAllTimers() {
+            if (timerStartTime === null) return;
+            
+            const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+            const timeStr = formatTime(elapsed);
+            
+            document.getElementById('timer').textContent = timeStr;
+            document.getElementById('timer2').textContent = timeStr;
+            document.getElementById('timer3').textContent = timeStr;
+        }
 
-function updateTimerDisplays() {
-    const timeStr = formatTime(currentSeconds);
-    document.getElementById('timerDisplay').innerText = timeStr;
-}
+        function startProcess() {
+            timerStartTime = Date.now();
+            timerInterval = setInterval(updateAllTimers, 100);
+            
+            document.querySelector('.waiting-page').classList.remove('active');
+            document.querySelector('.page-1').classList.add('active');
+            updateAllTimers();
+        }
 
-function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    startTime = Date.now();
-    timerInterval = setInterval(() => {
-        currentSeconds = Math.floor((Date.now() - startTime) / 1000);
-        updateTimerDisplays();
-    }, 1000);
-}
+        function goToWaiting() {
+            document.querySelector('.page-1').classList.remove('active');
+            document.querySelector('.waiting-page').classList.add('active');
+        }
 
-function stopTimer() {
-    clearInterval(timerInterval);
-}
+        function toggleTerms() {
+            const termsSection = document.getElementById('termsSection');
+            const checkbox = document.getElementById('membershipCheckbox');
+            if (checkbox.checked) {
+                termsSection.classList.add('show');
+            } else {
+                termsSection.classList.remove('show');
+            }
+            updatePrice();
+        }
 
-function updateBalanceDisplay() {
-    document.getElementById('balanceDisplay').innerText = userBalance.toLocaleString() + '원';
-}
+        function updatePrice() {
+            const membershipChecked = document.getElementById('membershipCheckbox').checked;
+            const membershipRow = document.getElementById('membershipRow');
+            const discountRow = document.getElementById('discountRow');
+            const totalPrice = document.getElementById('totalPrice1');
 
-// 프로세스 제어 함수
-function startProcess() {
-    userBalance = 14500;
-    currentSeconds = 0;
-    selectedOption = null;
-    isMembershipApproved = false;
-    
-    updateBalanceDisplay();
-    updateTimerDisplays();
-    
-    document.querySelector('.waiting-page').classList.remove('active');
-    document.getElementById('commonStatusHeader').style.display = 'block';
-    document.querySelector('.page-1').classList.add('active');
-    
-    // 1단계 진입 시 약관 체크박스 활성화 상태에 맞춰 수식 계산
-    document.getElementById('membershipCheckbox').checked = true;
-    calculatePrices();
-    startTimer();
-}
+            if (membershipChecked) {
+                membershipRow.style.display = 'flex';
+                discountRow.style.display = 'flex';
+                totalPrice.textContent = '16,400원';
+            } else {
+                membershipRow.style.display = 'none';
+                discountRow.style.display = 'none';
+                totalPrice.textContent = '14,500원';
+            }
+        }
 
-// 1단계 수식 계산 로직
-function calculatePrices() {
-    const isChecked = document.getElementById('membershipCheckbox').checked;
-    const termsSec = document.getElementById('termsSection');
-    
-    if (isChecked) {
-        if (termsSec) termsSec.style.display = 'block';
-        document.getElementById('deliveryRow').style.display = 'none'; // 배달료 제외
-        document.getElementById('membershipRow').style.display = 'flex'; // 멤버십 비용 표시
-        document.getElementById('discountRow').style.display = 'flex';
-        
-        // 수식: 상품금액(12000) + 멤버십비용(6990) - 할인(3000) = 15,990원
-        const total = foodPrice + membershipFee - 3000;
-        document.getElementById('totalPrice1').innerText = total.toLocaleString() + '원';
-    } else {
-        if (termsSec) termsSec.style.display = 'none';
-        document.getElementById('deliveryRow').style.display = 'flex'; // 배달료 복구
-        document.getElementById('membershipRow').style.display = 'none'; // 멤버십 비용 제외
-        document.getElementById('discountRow').style.display = 'none';
-        
-        // 수식: 상품금액(12000) + 배달료(2500) = 14,500원
-        const total = foodPrice + deliveryFee;
-        document.getElementById('totalPrice1').innerText = total.toLocaleString() + '원';
-    }
-}
+        function goToPage1() {
+            document.querySelector('.page-2').classList.remove('active');
+            document.querySelector('.page-1').classList.add('active');
+            updateAllTimers();
+        }
 
-function proceedToPage2() {
-    document.querySelector('.page-1').classList.remove('active');
-    document.querySelector('.page-2').classList.add('active');
-    
-    // 카드 선택 초기화 및 설정
-    document.getElementById('cardMembership').classList.remove('selected');
-    document.getElementById('cardGeneral').classList.remove('selected');
-    document.getElementById('nextButtonPage2').disabled = true;
-    document.getElementById('nextButtonPage2').style.opacity = '0.5';
-    document.getElementById('nextButtonPage2').style.cursor = 'not-allowed';
-}
+        function goToPage2() {
+            document.querySelector('.page-1').classList.remove('active');
+            document.querySelector('.page-2').classList.add('active');
+            updateAllTimers();
+        }
 
-function goToWaiting() {
-    stopTimer();
-    document.getElementById('commonStatusHeader').style.display = 'none';
-    document.querySelector('.page-1').classList.remove('active');
-    document.querySelector('.waiting-page').classList.add('active');
-}
+        function selectPaymentOption(method, amount) {
+            // 모든 카드 선택 해제
+            document.querySelectorAll('.comparison-card').forEach(card => {
+                card.classList.remove('selected');
+            });
 
-// 2단계 선택지 선택 로직
-function selectPaymentOption(option) {
-    selectedOption = option;
-    document.getElementById('cardMembership').classList.remove('selected');
-    document.getElementById('cardGeneral').classList.remove('selected');
-    
-    if (option === 'membership') {
-        document.getElementById('cardMembership').classList.add('selected');
-    } else {
-        document.getElementById('cardGeneral').classList.add('selected');
-    }
-    
-    const nextBtn = document.getElementById('nextButtonPage2');
-    nextBtn.disabled = false;
-    nextBtn.style.opacity = '1';
-    nextBtn.style.cursor = 'pointer';
-}
+            // 선택된 카드에 클래스 추가
+            if (method === 'membership') {
+                document.querySelector('.comparison-card.membership').classList.add('selected');
+                document.getElementById('selectedPaymentDisplay').textContent = '✨ A패스 멤버십 (16,400원)';
+            } else {
+                document.querySelector('.comparison-card.general').classList.add('selected');
+                document.getElementById('selectedPaymentDisplay').textContent = '💳 일반 결제 (14,500원)';
+            }
 
-function goToPage1() {
-    document.querySelector('.page-2').classList.remove('active');
-    document.querySelector('.page-1').classList.add('active');
-    calculatePrices();
-}
+            selectedPaymentMethod = method;
+            selectedAmount = amount;
 
-function proceedToPage3() {
-    document.querySelector('.page-2').classList.remove('active');
-    document.querySelector('.page-3').classList.add('active');
-    
-    const display = document.getElementById('selectedPaymentDisplay');
-    if (selectedOption === 'membership') {
-        display.innerText = '선택한 결제 방식: A패스 멤버십 결제 (총액: 9,000원)';
-    } else {
-        display.innerText = '선택한 결제 방식: 일반 일회성 결제 (총액: 14,500원)';
-    }
-}
+            // 다음 버튼 활성화
+            const nextButton = document.getElementById('nextButtonPage2');
+            nextButton.disabled = false;
+            nextButton.style.opacity = '1';
+            nextButton.style.cursor = 'pointer';
+        }
 
-function goToPage2() {
-    document.querySelector('.page-3').classList.remove('active');
-    document.querySelector('.page-2').classList.add('active');
-}
+        function goToPage3() {
+            document.querySelector('.page-2').classList.remove('active');
+            document.querySelector('.page-3').classList.add('active');
+            updateAllTimers();
+        }
 
-// 3단계 모달 팝업 제어 및 차감/분기 로직
-function showFinalModal() {
-    const overlay = document.getElementById('modalOverlay');
-    overlay.innerHTML = ''; // 초기화
-    overlay.classList.add('active');
-    
-    if (selectedOption === 'membership') {
-        // A패스 승인 확인 유도 팝업창 구성
-        overlay.innerHTML = `
-            <div class="modal-content apass-popup-content">
-                <h2 class="apass-headline">잠깐! A패스 특별 혜택을 정말로 취소하시겠습니까?</h2>
-                <div class="apass-benefits">
-                    <div class="benefit-item"><strong>모든 주문 배달비 0원 무제한 패스</strong>가 즉시 소멸됩니다.</div>
-                    <div class="benefit-item"><strong>오늘만 결제 가능한 특가 9,000원</strong> 혜택을 잃게 됩니다.</div>
-                </div>
-                <div class="apass-hidden-terms">
-                    <strong>[A패스 정기 구독 유의사항]</strong><br>
-                    A패스 가입 시 월간 이용 금액 6,990원이 별도로 청구되며, 등록된 결제 수단을 통해 매월 자동 갱신 결제됩니다.
-                </div>
-                <div class="apass-button-group">
-                    <button class="apass-approve-btn" onclick="handleApassConfirm(true)">아니오, 혜택 받고 가입 유지</button>
-                    <button class="apass-reject-btn" onclick="handleApassConfirm(false)">예, 취소하고 일반 결제</button>
-                </div>
-            </div>
-        `;
-    } else {
-        // 일반 결제 최종 확인 팝업창 구성
-        overlay.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-title">주문 최종 확인</div>
-                <div class="modal-message">일반 결제 방식으로 총 14,500원이 결제됩니다. 진행하시겠습니까?</div>
-                <div class="emotional-message">⚠️ A패스 미가입 시 무료 배달 및 할인 혜택을 일절 받으실 수 없습니다.</div>
-                <div class="button-group">
-                    <button class="btn-primary" onclick="handleGeneralConfirm(true)">주문 승인 및 결제</button>
-                    <button class="btn-secondary" onclick="handleGeneralConfirm(false)">취소</button>
-                </div>
-            </div>
-        `;
-    }
-}
+        function showFinalModal() {
+            if (selectedPaymentMethod === 'membership') {
+                document.getElementById('modalQuestion').innerHTML = 
+                    '<span style="color: #FF6B6B; font-weight: bold;">정말로 A패스 멤버십을 가입하고 3,000원 할인을 받으시겠습니까?</span>';
+                document.getElementById('emotionalMsg').innerHTML = 
+                    '❌ 아니요, 혜택을 포기하고 돈을 더 내고 결제를 진행하겠습니다';
+            } else {
+                document.getElementById('modalQuestion').innerHTML = 
+                    '<span style="color: #666;">일반 결제로 진행하시겠습니까?</span>';
+                document.getElementById('emotionalMsg').innerHTML = 
+                    '⚠️ 놓친 할인 혜택을 포기하고 진행합니다';
+            }
+            
+            document.getElementById('finalModal').classList.add('active');
+        }
 
-// 일반결제 승인 로직
-function handleGeneralConfirm(approved) {
-    document.getElementById('modalOverlay').classList.remove('active');
-    if (approved) {
-        stopTimer();
-        // 잔액 부족 조건 검사: 일반 결제 금액(14500원)은 현재 잔액(14500원)과 같으므로 정상 전출 가능하지만 실패 연출
-        // 요구사항에 맞춰 결과페이지 연동 및 상태값 대입
-        showResultPage('일반 결제');
-    }
-}
+        function closeFinalModal() {
+            document.getElementById('finalModal').classList.remove('active');
+        }
 
-// A패스 승인 및 차감 처리 로직
-function handleApassConfirm(approved) {
-    if (approved) {
-        // 사용자가 멤버십 승인(가입 유지)을 누르면 가지고 있는 금액에서 멤버십 비용 차감
-        userBalance -= membershipFee; // 14500 - 6990 = 7510원
-        updateBalanceDisplay();
-        isMembershipApproved = true;
-        
-        // 팝업 화면 전환 (멤버십 가입 완료 단계 연출)
-        const modalContent = document.querySelector('.modal-content');
-        modalContent.className = 'modal-content'; // 스타일 초기화 및 중앙 정렬 적용
-        modalContent.innerHTML = `
-            <div class="membership-completion">
-                <div class="completion-icon">🎉</div>
-                <div class="completion-title">A패스 가입 완료!</div>
-                <div class="completion-message">A패스 구독 멤버십 회원 등록이 완료되었습니다.<br>보유 금액에서 월간 이용 요금 6,990원이 차감되었습니다.</div>
-                <div class="benefit-summary">
-                    <h3>🎁 적용된 멤버십 특별 혜택</h3>
-                    <ul class="benefit-list" style="list-style: none;">
-                        <li>• 오늘 주문 푸드 가격 할인 패스 적용</li>
-                        <li>• 기본 배달 요금 0원 무료 적용 완료</li>
-                    </ul>
-                </div>
-                <button class="action-button" onclick="triggerInsufficiencyError()">주문 최종 단계 이동</button>
-            </div>
-        `;
-    } else {
-        // 취소를 누르면 일반 결제 전환으로 변경 처리
-        document.getElementById('modalOverlay').classList.remove('active');
-        selectedOption = 'general';
-        proceedToPage3();
-    }
-}
+        function proceedPayment() {
+            clearInterval(timerInterval);
+            const elapsedSeconds = Math.floor((Date.now() - timerStartTime) / 1000);
+            const elapsedTime = formatTime(elapsedSeconds);
 
-// 잔액 부족 분기 처리 함수 (A패스 승인 완료 후 다음 단계 제어)
-function triggerInsufficiencyError() {
-    document.getElementById('modalOverlay').classList.remove('active');
-    stopTimer();
-    
-    // 즉각 경고 얼럿 노출 및 결과 페이지 매핑
-    alert("돈이 모자릅니다😭.");
-    showResultPage('A패스 멤버십 결제');
-}
+            // 결과 표시
+            const paymentMethodText = selectedPaymentMethod === 'membership' ? 'A패스 멤버십' : '일반 결제';
+            const amountText = `${selectedAmount.toLocaleString()}원`;
 
-// 결과 페이지 매핑 로직 (일반결제 및 A패스 공통 결제 실패 및 타이머 노출)
-function showResultPage(methodName) {
-    document.getElementById('commonStatusHeader').style.display = 'none';
-    document.querySelector('.page-3').classList.remove('active');
-    
-    document.getElementById('resultStatusText').innerText = '결제 실패';
-    document.getElementById('resultTimeText').innerText = formatTime(currentSeconds);
-    document.getElementById('resultBalanceText').innerText = userBalance.toLocaleString() + '원';
-    document.getElementById('resultPaymentMethodText').innerText = methodName;
-    
-    document.querySelector('.completion-page').classList.add('active');
-}
+            document.getElementById('paymentMethod').textContent = paymentMethodText;
+            document.getElementById('finalAmount').textContent = amountText;
+            document.getElementById('totalTime').textContent = elapsedTime;
 
-// 리셋 및 결과 복구 로직
-function resetAll() {
-    document.querySelector('.completion-page').classList.remove('active');
-    document.querySelector('.analysis-page').classList.remove('active');
-    startProcess();
-}
+            document.getElementById('finalModal').classList.remove('active');
+            document.querySelector('.page-3').classList.remove('active');
+            document.querySelector('.completion-page').classList.add('active');
+        }
 
-// 다크패턴 분석 보고서 렌더링
-function goToAnalysis() {
-    document.querySelector('.completion-page').classList.remove('active');
-    document.querySelector('.analysis-page').classList.add('active');
-    
-    const container = document.getElementById('analysisContainer');
-    container.innerHTML = `
-        <div class="dark-pattern-item">
-            <span class="pattern-number">1</span>
-            <span class="pattern-title">특정 옵션 사전 선택 (Pre-selection)</span>
-            <p class="pattern-description">1단계 장바구니창 진입 시 사용자의 동의 없이 'A패스 멤버십' 가입 체크박스가 활성화된 채 강제되어 주의를 기울이지 않으면 정기 결제 회원이 되도록 기만적 인터페이스를 제공했습니다.</p>
-            <span class="pattern-stage">적용 위치: 1단계 장바구니 화면</span>
-        </div>
-        <div class="dark-pattern-item">
-            <span class="pattern-number">2</span>
-            <span class="pattern-title">숨겨진 정보 및 가격 오인 유도 (Hidden Information)</span>
-            <p class="pattern-description">월 멤버십 정기 구독료인 6,990원의 과금 구조를 유의사항 내부의 작고 희미한 회색 글씨로 시각적 명도를 낮추어 노안이나 저시력 소비자가 인지하기 어렵게 은닉했습니다.</p>
-            <span class="pattern-stage">적용 위치: 1단계 혜택 안내 및 하단 유의사항</span>
-        </div>
-        <div class="dark-pattern-item">
-            <span class="pattern-number">3</span>
-            <span class="pattern-title">잘못된 계층 구조 및 속임수 질문 (Misdirection)</span>
-            <p class="pattern-description">최종 가입 취소 시 기업 측에 이익이 되는 가입 유지 버튼은 강조 컬러로 직관화하고, 해지 탈퇴 경로용 버튼은 시각 요소를 삭제해 취약 계층의 오인 클릭을 강제했습니다.</p>
-            <span class="pattern-stage">적용 위치: 3단계 최종 확인 팝업 오버레이</span>
-        </div>
-    `;
-}
+        function goToAnalysis() {
+            document.querySelector('.completion-page').classList.remove('active');
+            document.querySelector('.analysis-page').classList.add('active');
+        }
 
-function backToCompletion() {
-    document.querySelector('.analysis-page').classList.remove('active');
-    document.querySelector('.completion-page').classList.add('active');
-}
-</script>
+        function goToCompletion() {
+            document.querySelector('.analysis-page').classList.remove('active');
+            document.querySelector('.completion-page').classList.add('active');
+        }
+
+        function resetProcess() {
+            // 상태 초기화
+            timerStartTime = null;
+            selectedPaymentMethod = null;
+            selectedAmount = 0;
+            clearInterval(timerInterval);
+
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // 시작 페이지 표시
+            document.querySelector('.waiting-page').classList.add('active');
+
+            // 2단계 선택 초기화
+            document.querySelectorAll('.comparison-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('nextButtonPage2').disabled = true;
+            document.getElementById('nextButtonPage2').style.opacity = '0.5';
+            document.getElementById('nextButtonPage2').style.cursor = 'not-allowed';
+
+            // 1단계 체크박스 초기화
+            document.getElementById('membershipCheckbox').checked = true;
+            document.getElementById('termsSection').classList.remove('show');
+            updatePrice();
+        }
+
+        // 초기화
+        document.getElementById('membershipCheckbox').addEventListener('change', toggleTerms);
+        updatePrice();
+    </script>
 </body>
-    </html>
+</html>
